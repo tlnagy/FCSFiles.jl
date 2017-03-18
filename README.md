@@ -9,6 +9,8 @@ Read Flow Cytometry Standard (FCS) files in Julia
 ## Usage
 
 ```julia
+julia> using FileIO
+
 julia> using FCS
 
 julia> flowrun = load("example.fcs")

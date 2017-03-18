@@ -6,7 +6,7 @@ include("type.jl")
 include("utils.jl")
 include("parse.jl")
 
-export load, FlowSample
+export FlowSample
 
 try
     add_format(format"FCS", "FCS", [".fcs"])
