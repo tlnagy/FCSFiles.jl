@@ -1,5 +1,7 @@
 using FCS
+using FileIO
 using Base.Test
 
-# write your own tests here
-@test 1 == 2
+flowrun = load("testdata/BD-FACS-Aria-II.fcs")
+
+@test length(flowrun["SSC-A"]) == 100000
