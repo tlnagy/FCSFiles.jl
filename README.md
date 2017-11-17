@@ -3,7 +3,6 @@
 Read Flow Cytometry Standard (FCS) files in Julia
 
 [![Build Status](https://travis-ci.org/tlnagy/FCS.jl.svg?branch=master)](https://travis-ci.org/tlnagy/FCS.jl)
-[![Coverage Status](https://coveralls.io/repos/tlnagy/FCS.jl/badge.svg?branch=master&service=github)](https://coveralls.io/github/tlnagy/FCS.jl?branch=master)
 [![codecov.io](http://codecov.io/github/tlnagy/FCS.jl/coverage.svg?branch=master)](http://codecov.io/github/tlnagy/FCS.jl?branch=master)
 
 ## Usage
