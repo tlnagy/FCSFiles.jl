@@ -58,7 +58,7 @@ function parse_data(io,
 
     flat_data = read(io, Float32, (end_data - start_data + 1) ÷ 4)
     endian_func = get_endian_func(text_mappings)
-    map!(endian_func, flat_data)
+    map!(endian_func, flat_data, flat_data)
 
     n_params = parse(Int, text_mappings["\$PAR"])
 
