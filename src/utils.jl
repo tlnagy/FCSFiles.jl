@@ -56,7 +56,7 @@ function verify_text(text_mappings::Dict{String, String})
     is_param = [contains(keyword, "n") for keyword in required_keywords]
 
     # verify that all non-parameterized keywords are present in the mapping
-    for non_param in required_keywords[.~is_param]
+    for non_param in required_keywords[@compat .~is_param]
         if !haskey(text_mappings, non_param)
             error("FCS file is corrupted. It is missing required keyword $non_param in its TEXT section")
         end
