@@ -1,7 +1,6 @@
 module FCS
 
 using FileIO
-using Compat
 
 include("type.jl")
 include("utils.jl")
