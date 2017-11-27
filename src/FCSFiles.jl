@@ -1,4 +1,4 @@
-module FCS
+module FCSFiles
 
 using FileIO
 
