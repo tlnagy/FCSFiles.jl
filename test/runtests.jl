@@ -1,4 +1,4 @@
-using FCS
+using FCSFiles
 using FileIO
 using Base.Test
 

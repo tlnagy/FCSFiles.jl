@@ -1,6 +1,6 @@
-# FCS
+# FCSFiles
 
-Read Flow Cytometry Standard (FCS) files in Julia
+Add FileIO.jl integration for FCS files
 
 [![Build Status](https://travis-ci.org/tlnagy/FCS.jl.svg?branch=master)](https://travis-ci.org/tlnagy/FCS.jl)
 [![codecov.io](http://codecov.io/github/tlnagy/FCS.jl/coverage.svg?branch=master)](http://codecov.io/github/tlnagy/FCS.jl?branch=master)
@@ -10,7 +10,7 @@ Read Flow Cytometry Standard (FCS) files in Julia
 ```julia
 julia> using FileIO
 
-julia> using FCS
+julia> using FCSFiles
 
 julia> flowrun = load("example.fcs")
 FCS.FlowSample{Float32}
