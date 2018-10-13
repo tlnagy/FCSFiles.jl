@@ -1,4 +1,4 @@
-immutable FlowSample{T}
+struct FlowSample{T}
     data::Dict{String, Vector{T}}
     params::Dict{String, String}
 end
@@ -38,6 +38,5 @@ Base.haskey(f::FlowSample, x) = haskey(f.data, x)
 Base.getindex(f::FlowSample, key) = f.data[key]
 Base.keys(f::FlowSample) = keys(f.data)
 Base.values(f::FlowSample) = values(f.data)
-Base.start(iter::FlowSample) = start(iter.data)
-Base.next(iter::FlowSample, state) = next(iter.data, state)
-Base.done(iter::FlowSample, state) = done(iter.data, state)
+Base.iterate(iter::FlowSample) = Base.iterate(iter.data)
+Base.iterate(iter::FlowSample, state) = Base.iterate(iter.data, state)

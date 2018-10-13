@@ -8,11 +8,7 @@ include("parse.jl")
 
 export FlowSample
 
-try
-    add_format(format"FCS", "FCS", [".fcs"])
-end
-
-function FileIO.load(f::File{format"FCS"})
+function load(f::File{format"FCS"})
     open(f) do io
         offsets = parse_header(io)
 

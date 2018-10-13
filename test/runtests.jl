@@ -1,6 +1,6 @@
 using FCSFiles
 using FileIO
-using Base.Test
+using Test
 
 flowrun = load("testdata/BD-FACS-Aria-II.fcs")
 

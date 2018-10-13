@@ -10,8 +10,6 @@ Add FileIO.jl integration for FCS files
 ```julia
 julia> using FileIO
 
-julia> using FCSFiles
-
 julia> flowrun = load("example.fcs")
 FCS.FlowSample{Float32}
     Machine: LSRFortessa

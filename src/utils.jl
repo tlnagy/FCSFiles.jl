@@ -29,8 +29,9 @@ and the state of the iterator.
 function grab_word(iter, state, delimiter::Char)
     word = Char[]
     prev = ' '
-    while !done(iter, state)
-        i, state = next(iter, state)
+    iter_result = iterate(iter, state)
+    while iter_result !== nothing
+        i, state = iter_result
 
         # only add character if the current and previous are both
         # delimiters (i.e. escaped) or neither are
@@ -40,6 +41,7 @@ function grab_word(iter, state, delimiter::Char)
         else
             break
         end
+        iter_result = iterate(iter, state)
     end
     join(word), state
 end
@@ -53,7 +55,7 @@ returned by `parse_text`
 """
 function verify_text(text_mappings::Dict{String, String})
     # get all parameterized keywords $P1N, $P2N, etc
-    is_param = [contains(keyword, "n") for keyword in required_keywords]
+    is_param = [occursin("n", keyword) for keyword in required_keywords]
 
     # verify that all non-parameterized keywords are present in the mapping
     for non_param in required_keywords[.~is_param]
@@ -69,7 +71,7 @@ function verify_text(text_mappings::Dict{String, String})
 
     for params in required_keywords[is_param]
         for i in 1:n_params
-            if !haskey(text_mappings, replace(params, "n", i))
+            if !haskey(text_mappings, replace(params, "n"=>i))
                 error("FCS file is corrupted. It is missing required keyword $non_param in its TEXT section")
             end
         end
