@@ -19,7 +19,9 @@ function parse_header(io)
 
     # DATA offsets are larger than 99,999,999bytes
     if offsets[3] == 0 && offsets[4] == 0
-        error("Reading of larger FCS not yet implemented, see issues")
+        text_mappings = parse_text(io, offsets[1], offsets[2])
+        offsets[3] = parse(Int64, text_mappings["\$BEGINDATA"])
+        offsets[4] = parse(Int64, text_mappings["\$ENDDATA"])
     end
     offsets
 end
