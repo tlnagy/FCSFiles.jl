@@ -2,5 +2,8 @@ name = "FCSFiles"
 uuid = "d76558cf-badf-52d4-a17e-381ab0b0d937"
 version = "0.1.1"
 
+[compat]
+julia = "1"
+
 [deps]
 FileIO = "5789e2e9-d7fb-5bc7-8068-2c6fae9b9549"
