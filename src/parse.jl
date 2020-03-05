@@ -39,13 +39,9 @@ function parse_text(io, start_text::Int, end_text::Int)
     # container for the results
     text_mappings = Dict{String, String}()
 
-    while true
+    while iterate(raw_text, state) !== nothing
         # grab key and ignore escaped delimiters
         key, state = grab_word(raw_text, state, delimiter)
-
-        if isempty(key) # empty key means the iteration has ended
-            break       # (technically, empty keys are impossible in FCS3)
-        end
 
         # grab value and ignore escaped delimiters
         value, state = grab_word(raw_text, state, delimiter)
