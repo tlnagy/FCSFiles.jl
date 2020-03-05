@@ -33,24 +33,21 @@ function parse_text(io, start_text::Int, end_text::Int)
     raw_btext = Array{UInt8}(undef, end_text - start_text + 1)
     read!(io, raw_btext)
     raw_text = String(raw_btext)
-    delimiter = raw_text[1]
+    # initialize iterator, save&skip the delimiter
+    delimiter, state = iterate(raw_text)
 
+    # container for the results
     text_mappings = Dict{String, String}()
-    # initialize iterator
-    iter_result = iterate(raw_text)
-    while iter_result !== nothing
-        i, state = iter_result
 
-        # found a new key, value pair
-        if i == '$'
-            # grab key and ignore escaped delimiters
-            key, state = grab_word(raw_text, state, delimiter)
-            # grab value and ignore escaped delimiters
-            value, state = grab_word(raw_text, state, delimiter)
-            # FCS keywords are case insensitive so force them uppercase
-            text_mappings["\$"*uppercase(key)] = value
-        end
-        iter_result = iterate(raw_text, state)
+    while iterate(raw_text, state) !== nothing
+        # grab key and ignore escaped delimiters
+        key, state = grab_word(raw_text, state, delimiter)
+
+        # grab value and ignore escaped delimiters
+        value, state = grab_word(raw_text, state, delimiter)
+
+        # FCS keywords are case insensitive so force everything to uppercase
+        text_mappings[uppercase(key)] = value
     end
     text_mappings
 end

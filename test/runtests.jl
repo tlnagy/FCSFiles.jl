@@ -24,7 +24,7 @@ using Test, HTTP
         # load the large file
         flowrun = load("testdata/testLargeFile.fcs")
         @test length(flowrun.data) == 50
-        @test length(flowrun.params) == 262
+        @test length(flowrun.params) == 268
 
         # cleanup
         rm("testdata/testLargeFile.fcs", force=true)
