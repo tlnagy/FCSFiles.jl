@@ -5,8 +5,7 @@ os:
   - osx
   - windows
 julia:
-  - 1.0 
-  - stable
+  - 1
   - nightly
 notifications:
   email:
