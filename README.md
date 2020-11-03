@@ -2,8 +2,9 @@
 
 Add FileIO.jl integration for FCS files
 
-[![Build Status](https://travis-ci.org/tlnagy/FCSFiles.jl.svg?branch=master)](https://travis-ci.org/tlnagy/FCSFiles.jl)
-[![codecov.io](http://codecov.io/github/tlnagy/FCSFiles.jl/coverage.svg?branch=master)](http://codecov.io/github/tlnagy/FCSFiles.jl?branch=master)
+| Stable release                                   | Repo status  |
+|--------------------------------------------------|--------------|
+| ![](https://juliahub.com/docs/FCSFiles/version.svg) | [![Build Status](https://travis-ci.org/tlnagy/FCSFiles.jl.svg?branch=master)](https://travis-ci.org/tlnagy/FCSFiles.jl) [![codecov.io](http://codecov.io/github/tlnagy/FCSFiles.jl/coverage.svg?branch=master)](http://codecov.io/github/tlnagy/FCSFiles.jl?branch=master) |
 
 ## Usage
 
