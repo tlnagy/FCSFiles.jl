@@ -3,6 +3,28 @@ using FileIO
 using Test, HTTP
 
 @testset "FCSFiles test suite" begin
+
+    # test loading an FCS 2.0 file
+    @testset "Loading an FCS 2.0 file" begin
+        # download the FCS 2.0 file
+        cwd = pwd()
+        cd(cwd*"/testdata")
+        @info "Downloading FCS 2.0 file ..."
+        io = open("testFCS2.fcs", "w")
+        r = HTTP.request("GET", "https://flowrepository.org/experiments/4/fcs_files/326/download", response_stream=io)
+        close(io)
+        cd(cwd)
+        @info "Done."
+
+        # load the FCS 2.0 file
+        @test_throws ErrorException @test_warn "FSC2.0 files are not guaranteed to work" flowrun = load("testdata/testFCS2.fcs")
+
+        # cleanup
+        rm("testdata/testFCS2.fcs", force=true)
+        @info "FCS 2.0 file removed"
+    end
+
+    # test the size of the file
     @testset "SSC-A size" begin
         flowrun = load("testdata/BD-FACS-Aria-II.fcs")
 
