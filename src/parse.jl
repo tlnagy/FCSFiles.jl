@@ -4,7 +4,7 @@ function parse_header(io)
     read!(io, rawversion)
     version = String(rawversion)
     if "$version" != "FCS3.0" && version != "FCS3.1"
-        warn("$version files are not guaranteed to work")
+        @warn "$version files are not guaranteed to work"
     end
     seek(io, 10)
     # start, end positions of TEXT, DATA, and ANALYSIS sections
