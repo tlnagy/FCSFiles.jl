@@ -1,4 +1,5 @@
 function parse_header(io)
+    @debug "in parse_header for FCS"
     seekstart(io)
     rawversion = Array{UInt8}(undef, 6)
     read!(io, rawversion)
@@ -9,11 +10,21 @@ function parse_header(io)
     seek(io, 10)
     # start, end positions of TEXT, DATA, and ANALYSIS sections
     offsets = Array{Int64}(undef, 6)
+
     for i in 1:6
         # offsets are encoded as ASCII strings
         raw_str = Array{UInt8}(undef, 8)
         read!(io, raw_str)
         offsets_str = String(raw_str)
+
+        # the last two numbers are for the analysis segment
+        # the analysis segment is facultative, although the bytes should
+        # always be there
+        # some cytometers (BD Accuri) do not put the last two bytes
+        # putting "0" bytes in their files is what other cytometers do
+        if isempty(lstrip(offsets_str)) && i>4
+            offsets_str="0"
+        end
         offsets[i] = parse(Int, strip(join(offsets_str)))
     end
 
@@ -23,7 +34,7 @@ function parse_header(io)
         offsets[3] = parse(Int64, text_mappings["\$BEGINDATA"])
         offsets[4] = parse(Int64, text_mappings["\$ENDDATA"])
     end
-    offsets
+    return offsets
 end
 
 
