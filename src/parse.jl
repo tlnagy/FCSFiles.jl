@@ -69,10 +69,17 @@ function parse_data(io,
                     end_data::Int,
                     text_mappings::Dict{String, String})
     seek(io, start_data)
-    # Add support for data types other than float
-    (text_mappings["\$DATATYPE"] != "F") && error("Non float32 support not implemented yet. Please see github issues for this project.")
 
-    flat_data = Array{Float32}(undef, (end_data - start_data + 1) ÷ 4)
+    # data type in FCS3.1 can be I (integer), F (float32), A (Ascii)
+    if text_mappings["\$DATATYPE"] == "I"
+        dtype = Int32
+    elseif text_mappings["\$DATATYPE"] == "F"
+        dtype = Float32
+    else
+        error("Only float and integer data types are implemented for now, the required .fcs file is using another number encoding.")
+    end
+
+    flat_data = Array{dtype}(undef, (end_data - start_data + 1) ÷ 4)
     read!(io, flat_data)
     endian_func = get_endian_func(text_mappings)
     map!(endian_func, flat_data, flat_data)
@@ -82,7 +89,7 @@ function parse_data(io,
     # data should be in multiples of `n_params` for list mode
     (mod(length(flat_data), n_params) != 0) && error("FCS file is corrupt. DATA and TEXT sections don't match.")
 
-    data = Dict{String, Vector{Float32}}()
+    data = Dict{String, Vector{dtype}}()
 
     for i in 1:n_params
         data[text_mappings["\$P$(i)N"]] = flat_data[i:n_params:end]
