@@ -27,4 +27,18 @@ end
         @test length(flowrun.data) == 50
         @test length(flowrun.params) == 268
     end
+
+    @testset "Loading float-encoded file" begin
+        flowrun = load("testdata/Attune.fcs")
+
+        @test length(flowrun["SSC-A"]) == 10000
+        @test flowrun["FSC-A"][2] == 12849.0f0
+    end
+
+    @testset "Loading Accuri file" begin
+        flowrun = load("testdata/BD_Accuri_C6.fcs")
+        @test length(flowrun["SSC-A"]) == 40000
+        @test flowrun["SSC-A"][2] == 911
+
+    end
 end
