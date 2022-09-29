@@ -3,53 +3,57 @@ using FileIO
 using Test, HTTP
 
 @testset "FCSFiles test suite" begin
-
+    testdir = dirname(@__FILE__)
     # test loading an FCS 2.0 file
     @testset "Loading an FCS 2.0 file" begin
         # download the FCS 2.0 file
-        cwd = pwd()
-        cd(cwd*"/testdata")
-        @info "Downloading FCS 2.0 file ..."
-        io = open("testFCS2.fcs", "w")
-        r = HTTP.request("GET", "https://flowrepository.org/experiments/4/fcs_files/326/download", response_stream=io)
-        close(io)
-        cd(cwd)
-        @info "Done."
-
         # load the FCS 2.0 file
-        @test_throws ErrorException @test_warn "FSC2.0 files are not guaranteed to work" flowrun = load("testdata/testFCS2.fcs")
-
-        # cleanup
-        rm("testdata/testFCS2.fcs", force=true)
-        @info "FCS 2.0 file removed"
+        fn = testdir * "/testdata/testFCS2.fcs"
+        @test_throws Exception @test_warn "FSC2.0 files are not guaranteed to work" flowrun = load(fn)
     end
 
     # test the size of the file
     @testset "SSC-A size" begin
-        flowrun = load("testdata/BD-FACS-Aria-II.fcs")
-
-        @test length(flowrun["SSC-A"]) == 100000
+        fn = testdir * "/testdata/BD-FACS-Aria-II.fcs"
+        @test length(load(fn)["SSC-A"]) == 100000
     end
 
-    # test the loading of a large FCS file
-    @testset "Loading of large FCS file" begin
-        # download the large FCS file
-        cwd = pwd()
-        cd(cwd*"/testdata")
-        @info "Downloading large FCS file ..."
-        io = open("testLargeFile.fcs", "w")
-        r = HTTP.request("GET", "https://flowrepository.org/experiments/1177/fcs_files/113151/download", response_stream=io)
-        close(io)
-        cd(cwd)
-        @info "Done."
+    # test that channels can be accessed in the expected way
+    @testset "Channel access" begin
+        fn = testdir * "/testdata/BD-FACS-Aria-II.fcs"
+        flowrun = load(fn)
+        for key in keys(flowrun.data)
+            @test flowrun[key] == flowrun.data[key]
+        end
+    end
 
-        # load the large file
-        flowrun = load("testdata/testLargeFile.fcs")
-        @test length(flowrun.data) == 50
-        @test length(flowrun.params) == 268
+    # test that multiple channels can be accessed in the expected way
+    @testset "Multiple channel access" begin
+        fn = testdir * "/testdata/BD-FACS-Aria-II.fcs"
+        flowrun = load(fn)
+        channels = collect(keys(flowrun.data))
+        for (keyA, keyB) in zip(channels[1:end-1], channels[2:end])
+            @test flowrun[[keyA, keyB]] == Dict(keyA => flowrun.data[keyA], keyB => flowrun.data[keyB])
+        end
+    end
 
-        # cleanup
-        rm("testdata/testLargeFile.fcs", force=true)
-        @info "Large file removed"
+    # test that individual samples/events can indexed
+    @testset "Sample indexing " begin
+        fn = testdir * "/testdata/BD-FACS-Aria-II.fcs"
+        flowrun = load(fn)
+
+        idx = rand(1:length(flowrun))
+        expected = Dict(k => flowrun.data[k][idx] for k in keys(flowrun.data))
+        @test expected == flowrun[idx]
+    end
+
+    # test that collections of samples/events can indexed
+    @testset "Samples indexing " begin
+        fn = testdir * "/testdata/BD-FACS-Aria-II.fcs"
+        flowrun = load(fn)
+
+        idxs = rand(1:length(flowrun["SSC-A"]), 256)
+        expected = Dict(k => flowrun.data[k][idxs] for k in keys(flowrun.data))
+        @test expected == flowrun[idxs]
     end
 end
