@@ -4,7 +4,7 @@ Add FileIO.jl integration for FCS files
 
 | Stable release                                   | Repo status  |
 |--------------------------------------------------|--------------|
-| ![](https://juliahub.com/docs/FCSFiles/version.svg) | [![Build Status](https://travis-ci.org/tlnagy/FCSFiles.jl.svg?branch=master)](https://travis-ci.org/tlnagy/FCSFiles.jl) [![codecov.io](http://codecov.io/github/tlnagy/FCSFiles.jl/coverage.svg?branch=master)](http://codecov.io/github/tlnagy/FCSFiles.jl?branch=master) |
+| ![](https://juliahub.com/docs/FCSFiles/version.svg) | [![][ci-img]][ci-url] [![][codecov-img]][codecov-url] |
 
 ## Usage
 
@@ -38,3 +38,9 @@ julia> draw(PNG("example.png", 10cm, 7cm, dpi=300), p)
 ```
 
 ![](example.png)
+
+[ci-img]: https://github.com/tlnagy/FCSFiles.jl/workflows/CI/badge.svg
+[ci-url]: https://github.com/tlnagy/FCSFiles.jl/actions
+
+[codecov-img]: https://codecov.io/gh/tlnagy/TiffImages.jl/branch/master/graph/badge.svg
+[codecov-url]: https://codecov.io/gh/tlnagy/TiffImages.jl
