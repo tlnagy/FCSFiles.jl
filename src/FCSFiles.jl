@@ -1,6 +1,7 @@
 module FCSFiles
 
 using FileIO
+using AxisArrays
 
 include("type.jl")
 include("utils.jl")

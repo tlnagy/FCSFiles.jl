@@ -1,5 +1,5 @@
-struct FlowSample{T}
-    data::Dict{String, Vector{T}}
+struct FlowSample{T<:Number, I<:AbstractVector{Int}}
+    data::AxisArray{T, 2, Matrix{T}, Tuple{Axis{:row, Vector{String}}, Axis{:col, I}}}
     params::Dict{String, String}
 end
 
@@ -32,17 +32,18 @@ function Base.show(io::IO, f::FlowSample)
     end
 end
 
-Base.length(f::FlowSample)  = length(f.data)
+Base.size(f::FlowSample) = size(f.data)
+Base.length(f::FlowSample)  = size(f)[1]
 
-Base.keys(f::FlowSample) = keys(f.data)
-Base.haskey(f::FlowSample, x) = haskey(f.data, x)
+Base.keys(f::FlowSample) = f.data.axes[1]
+Base.haskey(f::FlowSample, x) = x in keys(f)
+Base.values(f::FlowSample) = [f.data[key] for key in keys(f)]
 
-Base.getindex(f::FlowSample, key::String)          = f.data[key]
-Base.getindex(f::FlowSample, keys::AbstractVector{String}) = Dict(k=>f[k] for k in keys)
+Base.getindex(f::FlowSample, args...) = getindex(f.data, args...)
+Base.axes(f::FlowSample) = map(Base.OneTo, size(f))
+Base.axes(f::FlowSample, i::Int) = Base.axes(f)[i]
 
-Base.getindex(f::FlowSample, i::Int)         = Dict(k=>f[k][i] for k in keys(f))
-#Base.getindex(f::FlowSample, I::Vector{Int}) = Dict(k=>f[k][I] for k in keys(f))
-
-Base.values(f::FlowSample) = values(f.data)
 Base.iterate(iter::FlowSample) = Base.iterate(iter.data)
 Base.iterate(iter::FlowSample, state) = Base.iterate(iter.data, state)
+
+Base.Array(f::FlowSample) = Array(f.data)
