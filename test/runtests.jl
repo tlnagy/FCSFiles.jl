@@ -4,7 +4,6 @@ using Test, HTTP
 
 @testset "FCSFiles test suite" begin
     testdir = dirname(@__FILE__)
-    # test loading an FCS 2.0 file
     @testset "Loading an FCS 2.0 file" begin
         # download the FCS 2.0 file
         # load the FCS 2.0 file
@@ -12,48 +11,90 @@ using Test, HTTP
         @test_throws Exception @test_warn "FSC2.0 files are not guaranteed to work" flowrun = load(fn)
     end
 
-    # test the size of the file
-    @testset "SSC-A size" begin
-        fn = testdir * "/testdata/BD-FACS-Aria-II.fcs"
-        @test length(load(fn)["SSC-A"]) == 100000
-    end
-
-    # test that channels can be accessed in the expected way
-    @testset "Channel access" begin
+    @testset "FlowSample size and length" begin
         fn = testdir * "/testdata/BD-FACS-Aria-II.fcs"
         flowrun = load(fn)
-        for key in keys(flowrun.data)
+        @test size(flowrun) == (16, 100000)
+        @test length(flowrun) == 16
+    end
+
+    @testset "FlowSample keys and haskey" begin
+        fn = testdir * "/testdata/BD-FACS-Aria-II.fcs"
+        expected = [
+            "G710-A", "FSC-H", "V545-A", "FSC-A", "G560-A", "Time", "SSC-A", "B515-A", "G610-A",
+            "Event #", "R780-A", "G780-A", "V450-A", "G660-A",
+        ]
+        flowrun = load(fn)
+        
+        for channel in expected
+            @test haskey(flowrun, channel)
+        end
+
+        @test all(x in keys(flowrun) for x in expected)
+    end
+
+    # AxisArray already has tests, here we are just checking that
+    # relevant methods get forwarded to their AxisArray implementation
+    @testset "Channel access using String" begin
+        fn = testdir * "/testdata/BD-FACS-Aria-II.fcs"
+        flowrun = load(fn)
+
+        for key in keys(flowrun)
             @test flowrun[key] == flowrun.data[key]
         end
     end
 
-    # test that multiple channels can be accessed in the expected way
-    @testset "Multiple channel access" begin
+    @testset "Multiple channel access using String" begin
         fn = testdir * "/testdata/BD-FACS-Aria-II.fcs"
         flowrun = load(fn)
         channels = collect(keys(flowrun.data))
         for (keyA, keyB) in zip(channels[1:end-1], channels[2:end])
-            @test flowrun[[keyA, keyB]] == Dict(keyA => flowrun.data[keyA], keyB => flowrun.data[keyB])
+            @test flowrun[[keyA, keyB]] == flowrun.data[[keyA, keyB]]
         end
     end
 
-    # test that individual samples/events can indexed
-    @testset "Sample indexing " begin
+    @testset "Integer sample indexing as second dimension" begin
         fn = testdir * "/testdata/BD-FACS-Aria-II.fcs"
         flowrun = load(fn)
 
-        idx = rand(1:length(flowrun))
-        expected = Dict(k => flowrun.data[k][idx] for k in keys(flowrun.data))
-        @test expected == flowrun[idx]
+        idx = rand(1:size(flowrun)[2])
+        @test flowrun.data[:, idx] == flowrun[:, idx]
+
+        @test flowrun.data[:, begin] == flowrun[:, begin]
+        
+        @test flowrun.data[:, end] == flowrun[:, end]
+
+        rng = range(sort(rand(1:size(flowrun[2]), 2))...)
+        @test flowrun.data[:, rng] == flowrun[:, rng]
     end
 
-    # test that collections of samples/events can indexed
-    @testset "Samples indexing " begin
+    @testset "Mixed indexing with String and Integer" begin
         fn = testdir * "/testdata/BD-FACS-Aria-II.fcs"
         flowrun = load(fn)
 
-        idxs = rand(1:length(flowrun["SSC-A"]), 256)
-        expected = Dict(k => flowrun.data[k][idxs] for k in keys(flowrun.data))
-        @test expected == flowrun[idxs]
+        idx = rand(1:size(flowrun)[2])
+        @test flowrun.data["SSC-A", idx] == flowrun["SSC-A", idx]
+
+        @test flowrun.data[["SSC-A", "FSC-A"], idx] == flowrun[["SSC-A", "FSC-A"], idx]
+
+        rng = range(sort(rand(1:size(flowrun[2]), 2))...)
+        @test flowrun.data["SSC-A", rng] == flowrun["SSC-A", rng]
+        
+        @test flowrun.data[["SSC-A", "FSC-A"], rng] == flowrun[["SSC-A", "FSC-A"], rng]
+    end
+
+    @testset "Logical indexing in second dimension" begin
+        fn = testdir * "/testdata/BD-FACS-Aria-II.fcs"
+        flowrun = load(fn)
+
+        idxs = rand(Bool, size(flowrun)[2])
+        @test flowrun.data["SSC-A", idxs] == flowrun["SSC-A", idxs]
+    end
+
+    @testset "Convert to Matrix" begin
+        fn = testdir * "/testdata/BD-FACS-Aria-II.fcs"
+        flowrun = load(fn)
+
+        @test Array(flowrun.data) == Array(flowrun)
     end
 end

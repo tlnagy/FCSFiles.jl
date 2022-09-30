@@ -32,17 +32,16 @@ function Base.show(io::IO, f::FlowSample)
     end
 end
 
-# Implement most important parts of Dict interface
 Base.length(f::FlowSample)  = length(f.data)
 
 Base.keys(f::FlowSample) = keys(f.data)
 Base.haskey(f::FlowSample, x) = haskey(f.data, x)
 
 Base.getindex(f::FlowSample, key::String)          = f.data[key]
-Base.getindex(f::FlowSample, keys::Vector{String}) = Dict(k=>f[k] for k in keys)
+Base.getindex(f::FlowSample, keys::AbstractVector{String}) = Dict(k=>f[k] for k in keys)
 
 Base.getindex(f::FlowSample, i::Int)         = Dict(k=>f[k][i] for k in keys(f))
-Base.getindex(f::FlowSample, I::Vector{Int}) = Dict(k=>f[k][I] for k in keys(f))
+#Base.getindex(f::FlowSample, I::Vector{Int}) = Dict(k=>f[k][I] for k in keys(f))
 
 Base.values(f::FlowSample) = values(f.data)
 Base.iterate(iter::FlowSample) = Base.iterate(iter.data)
