@@ -64,7 +64,7 @@ using Test, HTTP
         
         @test flowrun.data[:, end] == flowrun[:, end]
 
-        rng = range(sort(rand(1:size(flowrun)[2], 2))...)
+        rng = range(sort(rand(1:size(flowrun)[2], 2))..., step=1)
         @test flowrun.data[:, rng] == flowrun[:, rng]
     end
 
@@ -77,7 +77,7 @@ using Test, HTTP
 
         @test flowrun.data[["SSC-A", "FSC-A"], idx] == flowrun[["SSC-A", "FSC-A"], idx]
 
-        rng = range(sort(rand(1:size(flowrun)[2], 2))...)
+        rng = range(sort(rand(1:size(flowrun)[2], 2))..., step=1)
         @test flowrun.data["SSC-A", rng] == flowrun["SSC-A", rng]
         
         @test flowrun.data[["SSC-A", "FSC-A"], rng] == flowrun[["SSC-A", "FSC-A"], rng]
