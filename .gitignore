@@ -4,3 +4,4 @@
 .ipynb_checkpoints/
 *.ipynb
 *Manifest.toml
+test/fcsexamples/
