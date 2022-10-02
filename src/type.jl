@@ -44,7 +44,6 @@ Base.getindex(f::FlowSample, args...) = getindex(f.data, args...)
 Base.axes(f::FlowSample) = Base.axes(f.data)
 Base.axes(f::FlowSample, i::Int) = Base.axes(f.data, i)
 
-Base.iterate(iter::FlowSample) = Base.iterate(iter.data)
-Base.iterate(iter::FlowSample, state) = Base.iterate(iter.data, state)
-
+Base.iterate(iter::FlowSample) = iterate(iter.data)
+Base.iterate(iter::FlowSample, state) = iterate(iter.data, state)
 Base.Array(f::FlowSample) = Array(f.data)

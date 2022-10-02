@@ -132,4 +132,17 @@ end
             @test flowrun[checkpoint[1]][checkpoint[2]] == value
         end
     end
+
+    @testset "Iterating FlowSample" begin
+        fn = joinpath(testdata_dir, "BD-FACS-Aria-II.fcs")
+        flowrun = load(fn)
+
+        i = 1
+        pass = true
+        for x in flowrun
+            pass = pass && x == flowrun[i]
+            i = i + 1
+        end
+        @test pass
+    end
 end
