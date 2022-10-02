@@ -42,5 +42,5 @@ julia> draw(PNG("example.png", 10cm, 7cm, dpi=300), p)
 [ci-img]: https://github.com/tlnagy/FCSFiles.jl/workflows/CI/badge.svg
 [ci-url]: https://github.com/tlnagy/FCSFiles.jl/actions
 
-[codecov-img]: https://codecov.io/gh/tlnagy/TiffImages.jl/branch/master/graph/badge.svg
-[codecov-url]: https://codecov.io/gh/tlnagy/TiffImages.jl
+[codecov-img]: https://codecov.io/gh/tlnagy/FCSFiles.jl/branch/master/graph/badge.svg
+[codecov-url]: https://codecov.io/gh/tlnagy/FCSFiles.jl

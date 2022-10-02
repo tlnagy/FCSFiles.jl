@@ -33,7 +33,8 @@ function Base.show(io::IO, f::FlowSample)
 end
 
 Base.size(f::FlowSample) = size(f.data)
-Base.length(f::FlowSample)  = size(f)[1]
+Base.size(f::FlowSample, dim::Int) = size(f)[dim]
+Base.length(f::FlowSample) = size(f, 1)
 
 Base.keys(f::FlowSample) = f.data.axes[1]
 Base.haskey(f::FlowSample, x) = x in keys(f)
