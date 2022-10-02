@@ -1,5 +1,5 @@
 struct FlowSample{T<:Number, I<:AbstractVector{Int}}
-    data::AxisArray{T, 2, Matrix{T}, Tuple{Axis{:row, Vector{String}}, Axis{:col, I}}}
+    data::AxisArray{T, 2, Matrix{T}, Tuple{Axis{:param, Vector{String}}, Axis{:event, I}}}
     params::Dict{String, String}
 end
 
@@ -41,8 +41,8 @@ Base.haskey(f::FlowSample, x) = x in keys(f)
 Base.values(f::FlowSample) = [f.data[key] for key in keys(f)]
 
 Base.getindex(f::FlowSample, args...) = getindex(f.data, args...)
-Base.axes(f::FlowSample) = map(Base.OneTo, size(f))
-Base.axes(f::FlowSample, i::Int) = Base.axes(f)[i]
+Base.axes(f::FlowSample) = Base.axes(f.data)
+Base.axes(f::FlowSample, i::Int) = Base.axes(f.data, i)
 
 Base.iterate(iter::FlowSample) = Base.iterate(iter.data)
 Base.iterate(iter::FlowSample, state) = Base.iterate(iter.data, state)

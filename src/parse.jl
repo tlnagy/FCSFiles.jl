@@ -77,6 +77,6 @@ function parse_data(io,
         rows[i] = text_mappings["\$P$(i)N"]
         datamatrix[i, :] = flat_data[i:n_params:end]
     end
-    data = AxisArray(datamatrix, rows, collect(1:size(datamatrix)[2]))
+    data = AxisArray(datamatrix, Axis{:param}(rows), Axis{:event}(1:size(datamatrix, 2)))
     FlowSample(data, text_mappings)
 end
