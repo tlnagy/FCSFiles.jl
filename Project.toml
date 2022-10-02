@@ -7,5 +7,6 @@ AxisArrays = "39de3d68-74b9-583c-8d2d-e117c070f3a9"
 FileIO = "5789e2e9-d7fb-5bc7-8068-2c6fae9b9549"
 
 [compat]
+AxisArrays = "0.4"
 FileIO = "1"
 julia = "1"
