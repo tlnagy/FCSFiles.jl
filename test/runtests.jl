@@ -1,6 +1,6 @@
 using FCSFiles
 using FileIO
-using Test, HTTP
+using Test
 
 project_root = isfile("runtests.jl") ? abspath("..") : abspath(".")
 testdata_dir = joinpath(project_root, "test", "fcsexamples")

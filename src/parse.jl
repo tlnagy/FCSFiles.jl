@@ -1,5 +1,4 @@
 function parse_header(io)
-    @debug "in parse_header for FCS"
     seekstart(io)
     rawversion = Array{UInt8}(undef, 6)
     read!(io, rawversion)
@@ -20,8 +19,11 @@ function parse_header(io)
         # the last two numbers are for the analysis segment
         # the analysis segment is facultative, although the bytes should
         # always be there
+        # (FCS 3.1 ref at https://isac-net.org/page/Data-Standards)
         # some cytometers (BD Accuri) do not put the last two bytes
         # putting "0" bytes in their files is what other cytometers do
+        # see github discussion:
+        # https://github.com/tlnagy/FCSFiles.jl/pull/13#discussion_r985251676
         if isempty(lstrip(offsets_str)) && i>4
             offsets_str="0"
         end

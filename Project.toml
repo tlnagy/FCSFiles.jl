@@ -3,7 +3,6 @@ uuid = "d76558cf-badf-52d4-a17e-381ab0b0d937"
 version = "0.1.6"
 
 [deps]
-CSV = "336ed68f-0bac-5ca0-87d4-7b16caf5d00b"
 FileIO = "5789e2e9-d7fb-5bc7-8068-2c6fae9b9549"
 Revise = "295af30f-e4ad-537b-8983-00126c2a3abe"
 Tables = "bd369af6-aec1-5ad0-b16a-f7cc5008161c"
