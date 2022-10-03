@@ -29,16 +29,16 @@ end
     end
 
     @testset "Loading float-encoded file" begin
-        flowrun = load("testdata/Attune.fcs")
+        flowrun = load(joinpath(testdata_dir, "Applied Biosystems - Attune.fcs"))
 
-        @test length(flowrun["SSC-A"]) == 10000
-        @test flowrun["FSC-A"][2] == 12849.0f0
+        @test length(flowrun["SSC-A"]) == 22188
+        @test flowrun["FSC-A"][2] == 244982.11f0
     end
 
     @testset "Loading Accuri file" begin
-        flowrun = load("testdata/BD_Accuri_C6.fcs")
-        @test length(flowrun["SSC-A"]) == 40000
-        @test flowrun["SSC-A"][2] == 911
+        flowrun = load(joinpath(testdata_dir, "Accuri - C6.fcs"))
+        @test length(flowrun["SSC-A"]) == 63273
+        @test flowrun["SSC-A"][2] == 370971
 
     end
 end
