@@ -1,6 +1,6 @@
 using FCSFiles
 using FileIO
-using Test, HTTP
+using Test
 
 project_root = isfile("runtests.jl") ? abspath("..") : abspath(".")
 testdata_dir = joinpath(project_root, "test", "fcsexamples")
@@ -26,5 +26,19 @@ end
 	flowrun = load(joinpath(testdata_dir, "Day 3.fcs"))
         @test length(flowrun.data) == 50
         @test length(flowrun.params) == 268
+    end
+
+    @testset "Loading float-encoded file" begin
+        flowrun = load(joinpath(testdata_dir, "Applied Biosystems - Attune.fcs"))
+
+        @test length(flowrun["SSC-A"]) == 22188
+        @test flowrun["FSC-A"][2] == 244982.11f0
+    end
+
+    @testset "Loading Accuri file" begin
+        flowrun = load(joinpath(testdata_dir, "Accuri - C6.fcs"))
+        @test length(flowrun["SSC-A"]) == 63273
+        @test flowrun["SSC-A"][2] == 370971
+
     end
 end
