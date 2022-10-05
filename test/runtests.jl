@@ -210,7 +210,11 @@ end
             pass = pass && value == getproperty(flowrun, Symbol(lowercase(var)))
         end
         @test pass
-        @test_throws "no field notthere" flowrun.notthere
+        @static if VERSION < v"1.8"
+            @test_throws ErrorException flowrun.notthere
+        else
+            @test_throws "no field notthere" flowrun.notthere
+        end
     end
 
     @testset "property names give the names of the parameters" begin
