@@ -144,6 +144,7 @@ end
             i = i + 1
         end
         @test pass
+    end
 
     @testset "Loading float-encoded file" begin
         flowrun = load(joinpath(testdata_dir, "Applied Biosystems - Attune.fcs"))
