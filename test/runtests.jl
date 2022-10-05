@@ -2,7 +2,6 @@ using FCSFiles
 using FileIO
 using Test
 
-#project_root = isfile("runtests.jl") ? abspath("..") : abspath(".")
 project_root = dirname(dirname(@__FILE__))
 testdata_dir = joinpath(project_root, "test", "fcsexamples")
 
@@ -26,7 +25,7 @@ end
 
     @testset "FlowSample size and length" begin
         fn = joinpath(testdata_dir, "BD-FACS-Aria-II.fcs")
-        flowrun = load(fn)
+        flowrun = load(fn) 
         @test size(flowrun) == (14, 100000)
         @test length(flowrun) == 14
     end
@@ -157,5 +156,21 @@ end
         flowrun = load(joinpath(testdata_dir, "Accuri - C6.fcs"))
         @test length(flowrun["SSC-A"]) == 63273
         @test flowrun["SSC-A"][2] == 370971
+    end
+
+    @testset "params throws deprecation warning" begin
+        fn = joinpath(testdata_dir, "BD-FACS-Aria-II.fcs")
+        flowrun = load(fn)
+
+        msg = "`flowrun.params` is deprecated and will be removed in a future release. Parameters can be accessed like any other member variable. E.g. `flowrun.par` or `flowrun.PAR`."
+        @test_logs (:warn, msg) flowrun.params
+    end
+
+    @testset "data throws deprecation warning" begin
+        fn = joinpath(testdata_dir, "BD-FACS-Aria-II.fcs")
+        flowrun = load(fn)
+
+        msg = "`flowrun.data` is deprecated and will be removed in a future release. The data can be indexed, e.g. `flowrun[\"SSC-A\"]` or can be obtained as a matrix with `Array(flowrun)`."
+        @test_logs (:warn, msg) flowrun.data
     end
 end

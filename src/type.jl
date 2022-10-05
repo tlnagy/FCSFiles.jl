@@ -32,18 +32,27 @@ function Base.show(io::IO, f::FlowSample)
     end
 end
 
-Base.size(f::FlowSample) = size(f.data)
+function Base.getproperty(f::FlowSample, s::Symbol)
+    if s == :params
+        Base.depwarn("`flowrun.params` is deprecated and will be removed in a future release. Parameters can be accessed like any other member variable. E.g. `flowrun.par` or `flowrun.PAR`.", "flowrun.params")
+    elseif s == :data
+        Base.depwarn("`flowrun.data` is deprecated and will be removed in a future release. The data can be indexed, e.g. `flowrun[\"SSC-A\"]` or can be obtained as a matrix with `Array(flowrun)`.", "flowrun.data")
+    end
+    getfield(f, s)
+end
+
+Base.size(f::FlowSample) = size(getfield(f, :data))
 Base.size(f::FlowSample, dim::Int) = size(f)[dim]
 Base.length(f::FlowSample) = size(f, 1)
 
-Base.keys(f::FlowSample) = f.data.axes[1]
+Base.keys(f::FlowSample) = getfield(f, :data).axes[1]
 Base.haskey(f::FlowSample, x) = x in keys(f)
-Base.values(f::FlowSample) = [f.data[key] for key in keys(f)]
+Base.values(f::FlowSample) = [getfield(f, :data)[key] for key in keys(f)]
 
-Base.getindex(f::FlowSample, args...) = getindex(f.data, args...)
-Base.axes(f::FlowSample) = Base.axes(f.data)
-Base.axes(f::FlowSample, i::Int) = Base.axes(f.data, i)
+Base.getindex(f::FlowSample, args...) = getindex(getfield(f, :data), args...)
+Base.axes(f::FlowSample) = Base.axes(getfield(f, :data))
+Base.axes(f::FlowSample, i::Int) = Base.axes(getfield(f, :data), i)
 
-Base.iterate(iter::FlowSample) = iterate(iter.data)
-Base.iterate(iter::FlowSample, state) = iterate(iter.data, state)
-Base.Array(f::FlowSample) = Array(f.data)
+Base.iterate(iter::FlowSample) = iterate(getfield(iter, :data))
+Base.iterate(iter::FlowSample, state) = iterate(getfield(iter, :data), state)
+Base.Array(f::FlowSample) = Array(getfield(f, :data))
