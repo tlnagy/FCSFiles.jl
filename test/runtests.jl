@@ -20,7 +20,7 @@ end
         # load the large file
 	flowrun = load(joinpath(testdata_dir, "Day 3.fcs"))
         @test length(flowrun) == 50
-        @test length(flowrun.params) == 268
+        @test length(getfield(flowrun, :params)) == 268
     end
 
     @testset "FlowSample size and length" begin
@@ -53,7 +53,7 @@ end
         flowrun = load(fn)
 
         for key in keys(flowrun)
-            @test flowrun[key] == flowrun.data[key]
+            @test flowrun[key] == getfield(flowrun, :data)[key]
         end
     end
 
@@ -62,7 +62,7 @@ end
         flowrun = load(fn)
         channels = keys(flowrun)
         for (keyA, keyB) in zip(channels[1:end-1], channels[2:end])
-            @test flowrun[[keyA, keyB]] == flowrun.data[[keyA, keyB]]
+            @test flowrun[[keyA, keyB]] == getfield(flowrun, :data)[[keyA, keyB]]
         end
     end
 
@@ -71,14 +71,14 @@ end
         flowrun = load(fn)
 
         idx = rand(1:size(flowrun, 2))
-        @test flowrun.data[:, idx] == flowrun[:, idx]
+        @test getfield(flowrun, :data)[:, idx] == flowrun[:, idx]
 
-        @test flowrun.data[:, begin] == flowrun[:, begin]
+        @test getfield(flowrun, :data)[:, begin] == flowrun[:, begin]
         
-        @test flowrun.data[:, end] == flowrun[:, end]
+        @test getfield(flowrun, :data)[:, end] == flowrun[:, end]
 
         rng = range(sort(rand(1:size(flowrun, 2), 2))..., step=1)
-        @test flowrun.data[:, rng] == flowrun[:, rng]
+        @test getfield(flowrun, :data)[:, rng] == flowrun[:, rng]
     end
 
     @testset "Mixed indexing with String and Integer" begin
@@ -86,14 +86,14 @@ end
         flowrun = load(fn)
 
         idx = rand(1:size(flowrun, 2))
-        @test flowrun.data["SSC-A", idx] == flowrun["SSC-A", idx]
+        @test getfield(flowrun, :data)["SSC-A", idx] == flowrun["SSC-A", idx]
 
-        @test flowrun.data[["SSC-A", "FSC-A"], idx] == flowrun[["SSC-A", "FSC-A"], idx]
+        @test getfield(flowrun, :data)[["SSC-A", "FSC-A"], idx] == flowrun[["SSC-A", "FSC-A"], idx]
 
         rng = range(sort(rand(1:size(flowrun, 2), 2))..., step=1)
-        @test flowrun.data["SSC-A", rng] == flowrun["SSC-A", rng]
+        @test getfield(flowrun, :data)["SSC-A", rng] == flowrun["SSC-A", rng]
         
-        @test flowrun.data[["SSC-A", "FSC-A"], rng] == flowrun[["SSC-A", "FSC-A"], rng]
+        @test getfield(flowrun, :data)[["SSC-A", "FSC-A"], rng] == flowrun[["SSC-A", "FSC-A"], rng]
     end
 
     @testset "Logical indexing in second dimension" begin
@@ -101,14 +101,14 @@ end
         flowrun = load(fn)
 
         idxs = rand(Bool, size(flowrun, 2))
-        @test flowrun.data["SSC-A", idxs] == flowrun["SSC-A", idxs]
+        @test getfield(flowrun, :data)["SSC-A", idxs] == flowrun["SSC-A", idxs]
     end
 
     @testset "Convert to Matrix" begin
         fn = joinpath(testdata_dir, "BD-FACS-Aria-II.fcs")
         flowrun = load(fn)
 
-        @test Array(flowrun.data) == Array(flowrun)
+        @test Array(getfield(flowrun, :data)) == Array(flowrun)
     end
 
     @testset "Regression for reading FCS files" begin
@@ -172,5 +172,59 @@ end
 
         msg = "`flowrun.data` is deprecated and will be removed in a future release. The data can be indexed, e.g. `flowrun[\"SSC-A\"]` or can be obtained as a matrix with `Array(flowrun)`."
         @test_logs (:warn, msg) flowrun.data
+    end
+
+    @testset "`param_lookup` for different versions of the param" begin
+        fn = joinpath(testdata_dir, "BD-FACS-Aria-II.fcs")
+        flowrun = load(fn)
+        pass = true
+        
+        for (key, value) in getfield(flowrun, :params)
+            # exact name
+            pass = pass && value == FCSFiles.param_lookup(flowrun, key)
+            # with no $
+            var = first(match(r"^\$?(.+)", key))
+            pass = pass && value == FCSFiles.param_lookup(flowrun, var)
+            # in lowercase
+            pass = pass && value == FCSFiles.param_lookup(flowrun, lowercase(key))
+            # in lowercase with no $
+            pass = pass && value == FCSFiles.param_lookup(flowrun, lowercase(var))
+        end
+        @test pass
+    end
+
+    @testset "param access through `Base.getproperty`" begin
+        fn = joinpath(testdata_dir, "BD-FACS-Aria-II.fcs")
+        flowrun = load(fn)
+        pass = true
+
+        for (key, value) in getfield(flowrun, :params)
+            # bare usage
+            pass = pass && value == getproperty(flowrun, Symbol(key))
+            # with no $
+            var = first(match(r"^\$?(.+)", key))
+            pass = pass && value == getproperty(flowrun, Symbol(var))
+            # in lowercase
+            pass = pass && value == getproperty(flowrun, Symbol(lowercase(key)))
+            # in lowercase with no $
+            pass = pass && value == getproperty(flowrun, Symbol(lowercase(var)))
+        end
+        @test pass
+        @test_throws "no field notthere" flowrun.notthere
+    end
+
+    @testset "property names give the names of the parameters" begin
+        fn = joinpath(testdata_dir, "BD-FACS-Aria-II.fcs")
+        flowrun = load(fn)
+        pass = true
+
+        for key in keys(getfield(flowrun, :params))
+            var = Symbol(lowercase(first(match(r"^\$?(.+)", key))))
+            pass = pass && var in propertynames(flowrun)
+        end
+        @test pass
+
+        @test :params in propertynames(flowrun, true)
+        @test :data in propertynames(flowrun, true)
     end
 end
