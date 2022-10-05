@@ -183,7 +183,7 @@ end
             # exact name
             pass = pass && value == FCSFiles.param_lookup(flowrun, key)
             # with no $
-            var = first(match(r"^\$?(.+)", key))
+            var = first(match(r"^\$?(.+)", key).captures)
             pass = pass && value == FCSFiles.param_lookup(flowrun, var)
             # in lowercase
             pass = pass && value == FCSFiles.param_lookup(flowrun, lowercase(key))
@@ -202,7 +202,7 @@ end
             # bare usage
             pass = pass && value == getproperty(flowrun, Symbol(key))
             # with no $
-            var = first(match(r"^\$?(.+)", key))
+            var = first(match(r"^\$?(.+)", key).captures)
             pass = pass && value == getproperty(flowrun, Symbol(var))
             # in lowercase
             pass = pass && value == getproperty(flowrun, Symbol(lowercase(key)))
@@ -219,7 +219,7 @@ end
         pass = true
 
         for key in keys(getfield(flowrun, :params))
-            var = Symbol(lowercase(first(match(r"^\$?(.+)", key))))
+            var = Symbol(lowercase(first(match(r"^\$?(.+)", key).captures)))
             pass = pass && var in propertynames(flowrun)
         end
         @test pass

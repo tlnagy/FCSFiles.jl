@@ -67,7 +67,7 @@ function Base.getproperty(f::FlowSample, s::Symbol)
 end
 
 function Base.propertynames(f::FlowSample, private::Bool=false)
-    makesym(x) = Symbol.(lowercase(first(match(r"^\$?(.+)", x))))
+    makesym(x) = Symbol.(lowercase(first(match(r"^\$?(.+)", x).captures)))
     names = makesym.(keys(getfield(f, :params)))
 
     if private
