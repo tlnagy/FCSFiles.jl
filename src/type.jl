@@ -84,10 +84,10 @@ Base.keys(f::FlowSample) = getfield(f, :data).axes[1]
 Base.haskey(f::FlowSample, x) = x in keys(f)
 Base.values(f::FlowSample) = [getfield(f, :data)[key] for key in keys(f)]
 
+Base.axes(f::FlowSample, args...) = AxisArrays.axes(getfield(f, :data), args...)
 Base.getindex(f::FlowSample, args...) = getindex(getfield(f, :data), args...)
-Base.axes(f::FlowSample) = Base.axes(getfield(f, :data))
-Base.axes(f::FlowSample, i::Int) = Base.axes(getfield(f, :data), i)
-
 Base.iterate(iter::FlowSample) = iterate(getfield(iter, :data))
 Base.iterate(iter::FlowSample, state) = iterate(getfield(iter, :data), state)
 Base.Array(f::FlowSample) = Array(getfield(f, :data))
+
+AxisArrays.axisnames(f::FlowSample) = axisnames(getfield(f, :data))

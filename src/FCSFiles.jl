@@ -2,6 +2,7 @@ module FCSFiles
 
 using FileIO
 using AxisArrays
+const axes = Base.axes
 
 include("type.jl")
 include("utils.jl")
