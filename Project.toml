@@ -1,6 +1,6 @@
 name = "FCSFiles"
 uuid = "d76558cf-badf-52d4-a17e-381ab0b0d937"
-version = "2.0.0"
+version = "0.2.0"
 
 [deps]
 AxisArrays = "39de3d68-74b9-583c-8d2d-e117c070f3a9"
