@@ -91,11 +91,13 @@ function parse_data(io,
     # data should be in multiples of `n_params` for list mode
     (mod(length(flat_data), n_params) != 0) && error("FCS file is corrupt. DATA and TEXT sections don't match.")
 
-    data = Dict{String, Vector{dtype}}()
+    datamatrix = Matrix{dtype}(undef, n_params, length(flat_data) ÷ n_params)
+    rows = Vector{String}(undef, n_params)
 
     for i in 1:n_params
-        data[text_mappings["\$P$(i)N"]] = flat_data[i:n_params:end]
+        rows[i] = text_mappings["\$P$(i)N"]
+        datamatrix[i, :] = flat_data[i:n_params:end]
     end
-
+    data = AxisArray(datamatrix, Axis{:param}(rows), Axis{:event}(1:size(datamatrix, 2)))
     FlowSample(data, text_mappings)
 end

@@ -1,10 +1,12 @@
 name = "FCSFiles"
 uuid = "d76558cf-badf-52d4-a17e-381ab0b0d937"
-version = "0.1.5"
+version = "0.2.0"
 
 [deps]
+AxisArrays = "39de3d68-74b9-583c-8d2d-e117c070f3a9"
 FileIO = "5789e2e9-d7fb-5bc7-8068-2c6fae9b9549"
 
 [compat]
+AxisArrays = "0.4"
 FileIO = "1"
 julia = "1"

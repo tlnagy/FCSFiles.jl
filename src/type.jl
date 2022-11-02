@@ -1,5 +1,5 @@
-struct FlowSample{T}
-    data::Dict{String, Vector{T}}
+struct FlowSample{T<:Number, I<:AbstractVector{Int}}
+    data::AxisArray{T, 2, Matrix{T}, Tuple{Axis{:param, Vector{String}}, Axis{:event, I}}}
     params::Dict{String, String}
 end
 
@@ -32,11 +32,62 @@ function Base.show(io::IO, f::FlowSample)
     end
 end
 
-# Implement most important parts of Dict interface
-Base.length(f::FlowSample)  = length(f.data)
-Base.haskey(f::FlowSample, x) = haskey(f.data, x)
-Base.getindex(f::FlowSample, key) = f.data[key]
-Base.keys(f::FlowSample) = keys(f.data)
-Base.values(f::FlowSample) = values(f.data)
-Base.iterate(iter::FlowSample) = Base.iterate(iter.data)
-Base.iterate(iter::FlowSample, state) = Base.iterate(iter.data, state)
+"""
+Looks for `s` in the `params` dict.
+
+`s` is searched for both as a FCS standard keyword then as a user-defined keyword, with precendence given to the standard keywords. E.g. `param_lookup(flowrun, "par")` will look for both `"\$PAR"` and `"PAR"` but return `"\$PAR"` if it exists, otherwise `"PAR"`.
+
+In accordance with the FCS3.0 standard, the search is cas insensitive.
+
+If no match is found, `nothing` is returned.
+"""
+function param_lookup(f::FlowSample, s::AbstractString)
+    s = uppercase(s)
+    params = getfield(f, :params)
+
+    result = get(params, startswith(s, "\$") ? s : "\$" * s, nothing)
+
+    return result === nothing ? get(params, s, nothing) : result
+end
+
+function Base.getproperty(f::FlowSample, s::Symbol)
+    if s == :params
+        Base.depwarn("`flowrun.params` is deprecated and will be removed in a future release. Parameters can be accessed like any other member variable. E.g. `flowrun.par` or `flowrun.PAR`.", "flowrun.params")
+    elseif s == :data
+        Base.depwarn("`flowrun.data` is deprecated and will be removed in a future release. The data can be indexed, e.g. `flowrun[\"SSC-A\"]` or can be obtained as a matrix with `Array(flowrun)`.", "flowrun.data")
+    end
+
+    value = param_lookup(f, String(s))
+
+    if value === nothing 
+        getfield(f, s)
+    else
+        value
+    end
+end
+
+function Base.propertynames(f::FlowSample, private::Bool=false)
+    makesym(x) = Symbol.(lowercase(first(match(r"^\$?(.+)", x).captures)))
+    names = makesym.(keys(getfield(f, :params)))
+
+    if private
+        append!(names, fieldnames(FlowSample))
+    end
+    names
+end
+
+Base.size(f::FlowSample) = size(getfield(f, :data))
+Base.size(f::FlowSample, dim::Int) = size(f)[dim]
+Base.length(f::FlowSample) = size(f, 1)
+
+Base.keys(f::FlowSample) = getfield(f, :data).axes[1]
+Base.haskey(f::FlowSample, x) = x in keys(f)
+Base.values(f::FlowSample) = [getfield(f, :data)[key] for key in keys(f)]
+
+Base.axes(f::FlowSample, args...) = AxisArrays.axes(getfield(f, :data), args...)
+Base.getindex(f::FlowSample, args...) = getindex(getfield(f, :data), args...)
+Base.iterate(iter::FlowSample) = iterate(getfield(iter, :data))
+Base.iterate(iter::FlowSample, state) = iterate(getfield(iter, :data), state)
+Base.Array(f::FlowSample) = Array(getfield(f, :data))
+
+AxisArrays.axisnames(f::FlowSample) = axisnames(getfield(f, :data))
