@@ -161,13 +161,13 @@ In general, any indexing that works with `AxisArray`s should work the same with 
 ## Plotting
 Here is an example which constructs a 2D histogram visualisation of a FCS file.
 
+```
 julia> using Gadfly
 
 julia> p = plot(x=flowrun["FSC-A"], y=flowrun["SSC-A"], Geom.histogram2d,
 Guide.xlabel("FSC-A"), Guide.ylabel("SSC-A"), Coord.cartesian(xmin=0, ymin=0))
 
 julia> draw(PNG("example.png", 10cm, 7cm, dpi=300), p)
-
 ```
 
 ![](example.png)
