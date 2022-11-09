@@ -1,6 +1,6 @@
-# FCSFiles
+# 🧫 FCSFiles.jl
 
-Add FileIO.jl integration for FCS files
+Add `FileIO.jl` integration for [flow cytometry](https://en.wikipedia.org/wiki/Flow_cytometry) FCS files.
 
 | Stable release                                   | Repo status  |
 |--------------------------------------------------|--------------|
