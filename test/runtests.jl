@@ -1,6 +1,7 @@
 using FCSFiles
 using FileIO
 using Test
+using Logging
 
 project_root = dirname(dirname(@__FILE__))
 testdata_dir = joinpath(project_root, "test", "fcsexamples")
