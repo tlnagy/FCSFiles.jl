@@ -27,7 +27,7 @@ function Base.show(io::IO, f::FlowSample)
     for i in 1:n_params
         print(io, "\n", spacing, spacing, "$(getproperty(f, Symbol("p$(i)n")))")
         if hasproperty(f, Symbol("p$(i)s"))
-            print(io, " ($(getproperty(f, Symbol("p$(i)n"))))")
+            print(io, " ($(getproperty(f, Symbol("p$(i)s"))))")
         end
     end
 end
