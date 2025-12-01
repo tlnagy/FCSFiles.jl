@@ -175,6 +175,17 @@ end
         @test_logs (:warn, msg) flowrun.data
     end
 
+    @testset "show doesn't throw deprecation warning" begin
+        fn = joinpath(testdata_dir, "BD-FACS-Aria-II.fcs")
+        flowrun = load(fn)
+
+        # Dummy IO to avoid printing to console
+        io = IOBuffer()
+
+        # Check that no warnings are raised when calling @show
+        @test_logs min_level = Logging.Warn Base.show(io, flowrun)
+    end
+
     @testset "`param_lookup` for different versions of the param" begin
         fn = joinpath(testdata_dir, "BD-FACS-Aria-II.fcs")
         flowrun = load(fn)
