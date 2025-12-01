@@ -4,12 +4,12 @@ struct FlowSample{T<:Number, I<:AbstractVector{Int}}
 end
 
 const opt_params = [
-("Machine", "\$CYT"),
-("Begin Time", "\$BTIM"),
-("End Time", "\$ETIM"),
-("Date", "\$DATE"),
-("File", "\$FIL"),
-("Volume run", "\$VOL")
+("Machine", :cyt),
+("Begin Time", :btim),
+("End Time", :etim),
+("Date", :date),
+("File", :fil),
+("Volume run", :vol)
 ]
 
 
@@ -18,16 +18,16 @@ function Base.show(io::IO, f::FlowSample)
     print(io, typeof(f))
 
     for pair in opt_params
-        if haskey(f.params, pair[2])
-            print(io, "\n", spacing, "$(pair[1]): $(f.params[pair[2]])")
+        if hasproperty(f, pair[2])
+            print(io, "\n", spacing, "$(pair[1]): $(getproperty(f, pair[2]))")
         end
     end
     print(io, "\n", spacing, "Axes:")
-    n_params = parse(Int, f.params["\$PAR"])
+    n_params = parse(Int, f.par)
     for i in 1:n_params
-        print(io, "\n", spacing, spacing, "$(f.params["\$P$(i)N"])")
-        if haskey(f.params, "\$P$(i)S")
-            print(io, " ($(f.params["\$P$(i)N"]))")
+        print(io, "\n", spacing, spacing, "$(getproperty(f, Symbol("p$(i)n")))")
+        if hasproperty(f, Symbol("p$(i)s"))
+            print(io, " ($(getproperty(f, Symbol("p$(i)n"))))")
         end
     end
 end
