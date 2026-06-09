@@ -28,24 +28,29 @@ and the state of the iterator.
 """
 function grab_word(iter, state, delimiter::Char)
     word = Char[]
-    prev = ' '
     iter_result = iterate(iter, state)
     while iter_result !== nothing
         i, state = iter_result
 
         # only add character if the current and previous are both
         # delimiters (i.e. escaped) or neither are
-        if !xor((prev == delimiter), (i == delimiter))
-            push!(word, i)
-            prev = i
+        if i == delimiter
+            next_iter_result = iterate(iter, state)
+            if !isnothing(next_iter_result) && next_iter_result[1] == delimiter
+                # add one delimiter to the word
+                push!(word, i)
+                # double delimiter so jump ahead
+                state = next_iter_result[2]
+            else
+                break
+            end
         else
-            break
+            push!(word, i)
         end
         iter_result = iterate(iter, state)
     end
     join(word), state
 end
-
 
 """
     verify_text(text_mappings) -> Void
