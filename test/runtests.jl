@@ -1,6 +1,7 @@
 using FCSFiles
 using FileIO
 using Test
+using Logging
 
 project_root = dirname(dirname(@__FILE__))
 testdata_dir = joinpath(project_root, "test", "fcsexamples")
@@ -172,6 +173,17 @@ end
 
         msg = "`flowrun.data` is deprecated and will be removed in a future release. The data can be indexed, e.g. `flowrun[\"SSC-A\"]` or can be obtained as a matrix with `Array(flowrun)`."
         @test_logs (:warn, msg) flowrun.data
+    end
+
+    @testset "show doesn't throw deprecation warning" begin
+        fn = joinpath(testdata_dir, "BD-FACS-Aria-II.fcs")
+        flowrun = load(fn)
+
+        # Dummy IO to avoid printing to console
+        io = IOBuffer()
+
+        # Check that no warnings are raised when calling @show
+        @test_logs min_level = Logging.Warn Base.show(io, flowrun)
     end
 
     @testset "`param_lookup` for different versions of the param" begin
