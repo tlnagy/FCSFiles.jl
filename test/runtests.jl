@@ -231,4 +231,13 @@ end
         @test :params in propertynames(flowrun, true)
         @test :data in propertynames(flowrun, true)
     end
+
+    @testset "Double delimited files" begin
+        # test that we can read and parse files with double delimiters
+        fn = joinpath(testdata_dir, "Attune NxT - A1.fcs")
+        flowrun = load(fn)
+
+        @test hasproperty(flowrun, :p11f)
+        @test flowrun.p11f == "488/10"
+    end
 end
