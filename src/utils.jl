@@ -32,17 +32,17 @@ function grab_word(iter, state, delimiter::Char)
     while iter_result !== nothing
         i, state = iter_result
 
-        # only add character if the current and previous are both
-        # delimiters (i.e. escaped) or neither are
         if i == delimiter
+            # check for a double delimiter
             next_iter_result = iterate(iter, state)
             if !isnothing(next_iter_result) && next_iter_result[1] == delimiter
-                # add one delimiter to the word
+                # double delimiter so:
+                # - add one delimiter to the word,
+                # - advance the state
                 push!(word, i)
-                # double delimiter so jump ahead
                 state = next_iter_result[2]
             else
-                break
+                break # single delimiter so terminate
             end
         else
             push!(word, i)
