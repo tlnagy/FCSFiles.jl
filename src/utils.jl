@@ -95,3 +95,8 @@ function get_endian_func(text_mappings::Dict{String, String})
 
 
 end
+
+function get_int_size(text_mappings::Dict{String, String})
+    int_map=Dict(i=>text_mappings[i] for i in filter(s->occursin(r"P.?B", s),keys(text_mappings)))
+    return int_map
+end

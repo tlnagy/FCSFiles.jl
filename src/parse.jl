@@ -71,19 +71,53 @@ function parse_data(io,
                     end_data::Int,
                     text_mappings::Dict{String, String})
     seek(io, start_data)
-
-    # data type in FCS3.1 can be I (integer), F (float32), A (Ascii)
     if text_mappings["\$DATATYPE"] == "I"
+        intsize=get_int_size(text_mappings) # Check Int sizes
+        uniinsize=unique(values(intsize)) # Extract all the unique int sizes
+        if length(uniinsize) == 1 # If the columns are uniform in Int size
+            unsize=Int(parse(Int,uniinsize[1])/8) # How many UInt8s does this cover
+            # Read io into a UInt8 Buffer
+            buf=read(io)
+            # Get Endianness of data
+            byte_order = text_mappings["\$BYTEORD"]
+            # Shift bits based on the Endianness of said data and then convert to a UInt32 for reading. 
+            if byte_order=="1,2,3,4"
+                buf2=[UInt32(sum(UInt32(buf[i + j]) << (8 * j) for j in 0:(unsize - 1))) for i in 1:unsize:length(buf)] # Little Endian bit shifting - note: this is stored in the endianess of the system it is working in - Windows, Mac and Linux are generally Little Endian.
+            elseif byte_order == "4,3,2,1"
+                buf2=[UInt32(sum(UInt32(buf[i + j]) << (8 * (unsize - j - 1)) for j in 0:(unsize - 1))) for i in 1:unsize:length(buf)] # Big Endian bit shifting - note: this is stored in the endianess of the system it is working in - Windows, Mac and Linux are generally Little Endian.
+            else
+                error("Keyword \$BYTEORDER is different that expected.")
+            end
+            # Create new IO Buffer to put IO in.
+            io_buffer=IOBuffer() 
+            # Write the IO to the IOBuffer just created.
+            write(io_buffer,buf2)
+            # Find the start of the new io_buffer
+            seekstart(io_buffer)
+        else
+            error("Uneven bit-width (not divisible by 8 or changing bit width between channels) is not implemented.") # Uneven maps not implemented.
+        end
         dtype = Int32
     elseif text_mappings["\$DATATYPE"] == "F"
         dtype = Float32
+    elseif text_mappings["\$DATATYPE"] == "D"
+        dtype = Float64
     else
         error("Only float and integer data types are implemented for now, the required .fcs file is using another number encoding.")
     end
 
-    flat_data = Array{dtype}(undef, (end_data - start_data + 1) ÷ 4)
-    read!(io, flat_data)
-    endian_func = get_endian_func(text_mappings)
+    
+    # Use the regular io if float and allow any endian type.
+    # If the io buffer is an integer array, read in the data in flat format and use ltoh ans this is what is defined by the system.
+    if text_mappings["\$DATATYPE"] != "I"
+        flat_data = Array{dtype}(undef, (end_data - start_data + 1) ÷ 4)
+        read!(io, flat_data)
+        endian_func = get_endian_func(text_mappings)
+    else
+        flat_data = Array{dtype}(undef, length(buf2))
+        read!(io_buffer, flat_data)
+        endian_func=ltoh # System defined 
+    end
     map!(endian_func, flat_data, flat_data)
 
     n_params = parse(Int, text_mappings["\$PAR"])
